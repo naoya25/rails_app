@@ -1,0 +1,54 @@
+<h3>投稿詳細</h3>
+<div class="instagram">
+  <p><a href="/users/<%= @instagram.user.id %>"><%= @instagram.user.name %></a></p>
+  <p><%= image_tag @instagram.image_url, size: "250x200" if @instagram.image? %></p>
+  <p><%= @instagram.body %></p>
+
+  <% if user_signed_in? %>
+    <% if current_user.already_liked?(@instagram) %>
+      <%= link_to instagram_like_path(@instagram), method: :delete do %>
+        <i class="fas fa-heart"></i><%= @instagram.likes.count %>
+      <% end %>
+    <% else %>
+      <%= link_to instagram_likes_path(@instagram), method: :post do %>
+        <i class="far fa-heart"></i><%= @instagram.likes.count %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <i class="far fa-heart"></i><%= @instagram.likes.count %>
+  <% end %>
+
+  <h2>いいねしたユーザー</h2>
+  <% @instagram.liked_users.each do |user| %>
+    <li><%= user.name %></li>
+  <% end %>
+
+  <div class="comment-wrapper">
+    <p>コメント一覧</p>
+    <% @comments.each do |c| %>
+      <div>
+        <%= c.user.email unless c.user.blank? %>
+        <br>
+        <%= c.content %>
+        <%= button_to "削除", comment_path(c.id), class:'dropdown-item', method: :delete %>
+      </div>
+        <br>
+    <% end %>
+
+    <% if user_signed_in? %>
+      <%= form_with(model: [@instagram, @comment], local: true) do |f| %>
+        <%= f.text_area :content %>
+        <%= button_tag type: "submit",  class:'btn btn-primary' do %>
+          コメントする
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if user_signed_in? && current_user.id == @instagram.user_id %>  
+    <%= link_to "編集する", edit_instagram_path %>
+    <%= button_to "削除する", instagram_path, method: :delete %>
+  <% end %> 
+</div>
+
+<%= link_to "投稿一覧に戻る", instagrams_path %>

@@ -1,0 +1,18 @@
+<h1>マイページ</h1>
+<p><%= image_tag @user.image_url, size: "100x100" if @user.image? %>
+<p>名前 : <%= @user.name %></p>
+<p>プロフィール : <%= @user.profile %></p>
+
+<% if current_user.id == @user.id %>
+  <%= link_to "編集する", edit_user_registration_path %>
+<% end %>
+
+<h2>ユーザーの投稿一覧</h2>
+<% @user.instagrams.each do |t| %>
+  <%= t.user.name %>
+  <%= image_tag t.image_url, size: "250x200" if t.image? %>
+  <%= t.body %>
+<% end %>
+
+<%= link_to "投稿一覧に戻る", instagrams_path %>
+<%= button_to 'ログアウト', destroy_user_session_path, method: :delete %>
